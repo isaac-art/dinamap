@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .video-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #e6f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Loading Test</h1>
+    
+    <div class="video-container">
+        <h2>Test 1: Original Large Video (17MB)</h2>
+        <div id="status1" class="info">Loading...</div>
+        <video 
+            id="video1"
+            src="/static/videos/1.mp4" 
+            controls 
+            preload="metadata"
+            onloadstart="logEvent('video1', 'loadstart')"
+            onloadedmetadata="logEvent('video1', 'loadedmetadata')"
+            oncanplay="logEvent('video1', 'canplay')"
+            onerror="logError('video1', event)"
+        ></video>
+    </div>
+
+    <div class="video-container">
+        <h2>Test 2: Smaller Video (4.8MB)</h2>
+        <div id="status2" class="info">Loading...</div>
+        <video 
+            id="video2"
+            src="/static/chopped_videos/by_hammock/10.mp4" 
+            controls 
+            preload="metadata"
+            onloadstart="logEvent('video2', 'loadstart')"
+            onloadedmetadata="logEvent('video2', 'loadedmetadata')"
+            oncanplay="logEvent('video2', 'canplay')"
+            onerror="logError('video2', event)"
+        ></video>
+    </div>
+
+    <div class="video-container">
+        <h2>Test 3: External Sample Video</h2>
+        <div id="status3" class="info">Loading...</div>
+        <video 
+            id="video3"
+            src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4" 
+            controls 
+            preload="metadata"
+            onloadstart="logEvent('video3', 'loadstart')"
+            onloadedmetadata="logEvent('video3', 'loadedmetadata')"
+            oncanplay="logEvent('video3', 'canplay')"
+            onerror="logError('video3', event)"
+        ></video>
+    </div>
+
+    <script>
+        function logEvent(videoId, event) {
+            const statusDiv = document.getElementById(`status${videoId.slice(-1)}`);
+            const timestamp = new Date().toLocaleTimeString();
+            statusDiv.innerHTML += `<br>${timestamp}: ${event} event fired`;
+            
+            if (event === 'canplay') {
+                statusDiv.className = 'success';
+                statusDiv.innerHTML += ' - Video can play!';
+            }
+        }
+
+        function logError(videoId, event) {
+            const statusDiv = document.getElementById(`status${videoId.slice(-1)}`);
+            const video = event.target;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let errorMessage = `${timestamp}: Video error occurred`;
+            
+            if (video.error) {
+                switch (video.error.code) {
+                    case 1:
+                        errorMessage += ' - Video loading was aborted';
+                        break;
+                    case 2:
+                        errorMessage += ' - Network error while loading video';
+                        break;
+                    case 3:
+                        errorMessage += ' - Video decoding failed. The video format may not be supported';
+                        break;
+                    case 4:
+                        errorMessage += ' - Video is not supported by this browser';
+                        break;
+                    default:
+                        errorMessage += ' - Unknown error occurred';
+                }
+            }
+            
+            statusDiv.className = 'error';
+            statusDiv.innerHTML = errorMessage;
+            
+            console.error('Video error:', video.error);
+        }
+
+        // Test video support
+        window.addEventListener('load', function() {
+            const testVideo = document.createElement('video');
+            const canPlayMP4 = testVideo.canPlayType('video/mp4');
+            const canPlayWebM = testVideo.canPlayType('video/webm');
+            
+            console.log('MP4 support:', canPlayMP4);
+            console.log('WebM support:', canPlayWebM);
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'info';
+            infoDiv.innerHTML = `
+                <h3>Browser Video Support:</h3>
+                <p>MP4: ${canPlayMP4 || 'Not supported'}</p>
+                <p>WebM: ${canPlayWebM || 'Not supported'}</p>
+                <p>User Agent: ${navigator.userAgent}</p>
+            `;
+            document.body.insertBefore(infoDiv, document.body.firstChild);
+        });
+    </script>
+</body>
+</html> 

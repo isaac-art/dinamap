@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DinaMap</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            background: #2c3e50;
+            min-height: 100vh;
+            color: #ecf0f1;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ecf0f1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #34495e;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: #34495e;
+            border: 4px solid #2c3e50;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .status-bar {
+            background: #2c3e50;
+            border: 2px solid #ecf0f1;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .uid-display {
+            font-family: 'Courier New', monospace;
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            word-break: break-all;
+            border: 1px solid #bdc3c7;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            color: #ecf0f1;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-option {
+            border: 3px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .avatar-option:hover {
+            border-color: #f39c12;
+            background: #34495e;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .avatar-option.selected {
+            border-color: #27ae60;
+            background: #2ecc71;
+            color: #2c3e50;
+        }
+
+        .avatar-option img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+            object-fit: contain;
+        }
+
+        .save-section {
+            background: #2c3e50;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .save-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+        }
+
+        .save-input:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn {
+            background: #3498db;
+            color: #ecf0f1;
+            border: 2px solid #2980b9;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #7f8c8d;
+            border-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            border-color: #229954;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            border: 2px solid;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: #27ae60;
+            color: #ecf0f1;
+            border-color: #229954;
+        }
+
+        .message.error {
+            background: #e74c3c;
+            color: #ecf0f1;
+            border-color: #c0392b;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ecf0f1;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .saved-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .saved-item {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .remove-item {
+            background: #e74c3c;
+            color: #ecf0f1;
+            border: 1px solid #c0392b;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            margin-left: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+
+        .remove-item:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        .stats-section {
+            background: #2c3e50;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .stats-content {
+            margin-top: 15px;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #34495e;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            min-width: 120px;
+        }
+
+        .stat-card h3 {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .stats-column h3 {
+            color: #ecf0f1;
+            margin-bottom: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .stats-list {
+            background: #34495e;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #7f8c8d;
+            transition: background 0.2s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-item:hover {
+            background: #2c3e50;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-rank {
+            background: #3498db;
+            color: #ecf0f1;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-name {
+            flex: 1;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .stat-count {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #bdc3c7;
+            font-style: italic;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Game Styles */
+        .game-intro {
+            text-align: center;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .game-section {
+            background: #2c3e50;
+            border: 4px solid #34495e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .game-main {
+            flex: 1;
+        }
+
+        .game-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 200px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            color: #ecf0f1;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .inventory {
+            background: #34495e;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 12px;
+            min-width: 180px;
+        }
+
+        .inventory h3 {
+            color: #ecf0f1;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .inventory-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .inventory-item {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 6px 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #7f8c8d;
+        }
+
+        .game-canvas-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-canvas {
+            border: 3px solid #ecf0f1;
+            border-radius: 6px;
+            background: #34495e;
+            cursor: crosshair;
+            outline: none;
+        }
+
+        .game-instructions {
+            margin-top: 8px;
+            text-align: center;
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            z-index: 1001;
+            display: none;
+        }
+
+        .control-pad {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .control-btn {
+            position: absolute;
+            background: #2c3e50;
+            border: 3px solid #34495e;
+            color: #ecf0f1;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.1s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .control-btn:active {
+            background: #34495e;
+            transform: scale(0.95);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .control-btn.active {
+            background: #34495e;
+            transform: scale(0.9);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .control-btn:focus {
+            outline: none;
+        }
+
+        .control-btn.up {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .control-btn.down {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .control-btn.left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .control-btn.right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .control-btn.up:active,
+        .control-btn.up.active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        .control-btn.down:active,
+        .control-btn.down.active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        .control-btn.left:active,
+        .control-btn.left.active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .control-btn.right:active,
+        .control-btn.right.active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.95);
+        }
+
+        .control-btn.active {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0.9);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn:focus {
+            outline: none;
+        }
+
+        .control-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .control-btn.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .control-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .control-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 5px;
+                max-width: 100%;
+                min-height: 100vh;
+            }
+
+            .header {
+                margin-bottom: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 5px;
+                border-radius: 8px;
+            }
+
+            .game-section {
+                padding: 5px;
+                border-radius: 8px;
+                margin-bottom: 5px;
+                min-height: 80vh;
+            }
+
+            .game-layout {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .game-sidebar {
+                min-width: auto;
+                flex-direction: row;
+                gap: 10px;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .game-header {
+                flex-direction: row;
+                gap: 5px;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 5px;
+            }
+
+            .game-controls {
+                flex-direction: row;
+                gap: 5px;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .inventory {
+                min-width: auto;
+                padding: 5px 8px;
+            }
+
+            .inventory h3 {
+                font-size: 0.8rem;
+                margin-bottom: 2px;
+            }
+
+            .inventory-items {
+                display: none;
+            }
+
+            .game-controls .btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .game-canvas-container {
+                margin-top: 5px;
+            }
+
+            .game-canvas {
+                border-width: 1px;
+                border-radius: 4px;
+                max-width: 100%;
+                height: auto;
+            }
+
+            .game-canvas-container {
+                margin-top: 10px;
+            }
+
+            .game-canvas {
+                border-width: 2px;
+                border-radius: 8px;
+                max-width: 100%;
+                height: auto;
+            }
+
+            .game-instructions {
+                display: none;
+            }
+
+            .mobile-controls {
+                display: block;
+            }
+
+            /* Make sections more compact on mobile */
+            .section {
+                margin-bottom: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .avatar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 10px;
+            }
+
+            .avatar-option {
+                padding: 10px;
+            }
+
+            .avatar-option img {
+                width: 50px;
+                height: 50px;
+            }
+
+            /* Make popup more mobile-friendly */
+            .popup-content {
+                width: 95vw;
+                height: 90vh;
+                max-width: none;
+                max-height: none;
+                margin: 10px;
+            }
+
+            .popup-header {
+                padding: 15px;
+            }
+
+            .popup-body {
+                padding: 15px;
+            }
+
+            .popup-actions {
+                padding: 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .popup-actions .btn {
+                width: 100%;
+            }
+
+            /* Mobile-friendly intro text */
+            .section p {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                margin-bottom: 15px;
+            }
+
+            /* Compact stats for mobile */
+            .stats-section {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stat-card {
+                min-width: auto;
+                padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .stats-list {
+                padding: 10px;
+            }
+
+            .stat-item {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Hide mobile controls on desktop */
+        @media (min-width: 769px) {
+            .mobile-controls {
+                display: none;
+            }
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #34495e;
+            border: 4px solid #2c3e50;
+            border-radius: 8px;
+            width: 90vw;
+            height: 90vh;
+            max-width: 1200px;
+            max-height: 800px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            background: #2c3e50;
+        }
+
+        .popup-header h3 {
+            margin: 0;
+            color: #ecf0f1;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .popup-close {
+            background: #e74c3c;
+            color: #ecf0f1;
+            border: 2px solid #c0392b;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+
+        .popup-close:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .popup-body {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #34495e;
+        }
+
+        .popup-media {
+            margin-bottom: 15px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+        }
+
+        .popup-media img,
+        .popup-media video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 6px;
+            object-fit: contain;
+            border: 2px solid #ecf0f1;
+        }
+
+        .popup-description {
+            color: #ecf0f1;
+            line-height: 1.5;
+            margin-top: 12px;
+            flex-shrink: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .three-d-placeholder {
+            background: #2c3e50;
+            border: 2px dashed #ecf0f1;
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            color: #ecf0f1;
+        }
+
+        .three-d-viewer {
+            background: #34495e;
+            height: 150px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+            color: #bdc3c7;
+            border: 1px solid #7f8c8d;
+        }
+
+        .popup-actions {
+            padding: 15px;
+            border-top: 2px solid #ecf0f1;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            background: #2c3e50;
+        }
+
+        .replace-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .replace-item {
+            background: #2c3e50;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #ecf0f1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .replace-item:hover {
+            border-color: #f39c12;
+            background: #34495e;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: #2c3e50;
+            border-color: #e67e22;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .video-error {
+            background: #e74c3c;
+            color: #ecf0f1;
+            border: 2px solid #c0392b;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .video-error p {
+            margin-bottom: 8px;
+        }
+
+        .video-loading {
+            background: #34495e;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            color: #ecf0f1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .video-loading .loading {
+            margin: 0 auto 15px auto;
+        }
+
+        .video-fallback {
+            background: #34495e;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #ecf0f1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .video-fallback p {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="header">
+                <h1>Segara Lestari World</h1>
+            </div>
+
+            <div class="main-content">
+                <!-- Status Bar -->
+                <div class="status-bar" v-if="false">
+                    <strong>Session ID:</strong>
+                    <div class="uid-display">{{ uid || 'Loading...' }}</div>
+                    <div v-if="loading" class="loading"></div>
+                </div>
+
+                <!-- Messages -->
+                <!-- <div v-if="message" :class="['message', messageType]">
+                    {{ message }}
+                </div> -->
+
+                <div v-if="!gameStarted" class="section">
+                    In this little game you can explore around finding images and videos and picking up the ones you like best. The images and videos vary in opinion, some being direct, some kaleidoscopic. We keep a record of what people pick up and use this to curate our dataset, directing our documentation towards what is collectively seen as interesting or best representing dinacon. 
+                </div>
+
+                <!-- Avatar Selection -->
+                <div v-if="!selectedAvatar && !gameStarted" class="section">
+                    <h2>Choose Your Avatar</h2>
+                    <p>These avatars were made during the chill airdrying clay session that we tagged onto the very chill watercolors. Thanks to everyone who helped make them!</p>
+                    <div class="avatar-grid">
+                        <div 
+                            v-for="avatar in avatars" 
+                            :key="avatar.id"
+                            :class="['avatar-option', { selected: selectedAvatar === avatar.id }]"
+                            @click="selectAvatar(avatar.id)"
+                        >
+                            <img :src="avatar.image" :alt="avatar.name">
+                            <div>{{ avatar.name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Game World -->
+                <div v-if="gameStarted" class="game-section">
+                    <div class="game-layout">
+                        <div class="game-main">
+                            <div class="game-canvas-container">
+                                <canvas 
+                                    ref="gameCanvas" 
+                                    class="game-canvas"
+                                    @keydown="handleKeyPress"
+                                    tabindex="0"
+                                ></canvas>
+                                <div class="game-instructions">
+                                    <p>Use WASD or Arrow Keys to move</p>
+                                    <p>Interactions trigger automatically when you enter areas</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="game-sidebar">
+                            <div class="inventory">
+                                <h3>Collection ({{ savedItems.length }}/3)</h3>
+                                <div class="inventory-items">
+                                    <div 
+                                        v-for="(item, index) in savedItems" 
+                                        :key="index"
+                                        class="inventory-item"
+                                    >
+                                        {{ item }}
+                                        <button 
+                                            class="remove-item"
+                                            @click="removeItem(index)"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn" @click="exitGame">Exit Game</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Controls -->
+                <div class="mobile-controls">
+                    <div class="control-pad">
+                        <button class="control-btn up" 
+                            @touchstart="handleMobileMove('up', $event)" 
+                            @touchend="stopContinuousMove"
+                            @mousedown="handleMobileMove('up', $event)" 
+                            @mouseup="stopContinuousMove"
+                            @mouseleave="stopContinuousMove">↑</button>
+                        <button class="control-btn down" 
+                            @touchstart="handleMobileMove('down', $event)" 
+                            @touchend="stopContinuousMove"
+                            @mousedown="handleMobileMove('down', $event)" 
+                            @mouseup="stopContinuousMove"
+                            @mouseleave="stopContinuousMove">↓</button>
+                        <button class="control-btn left" 
+                            @touchstart="handleMobileMove('left', $event)" 
+                            @touchend="stopContinuousMove"
+                            @mousedown="handleMobileMove('left', $event)" 
+                            @mouseup="stopContinuousMove"
+                            @mouseleave="stopContinuousMove">←</button>
+                        <button class="control-btn right" 
+                            @touchstart="handleMobileMove('right', $event)" 
+                            @touchend="stopContinuousMove"
+                            @mousedown="handleMobileMove('right', $event)" 
+                            @mouseup="stopContinuousMove"
+                            @mouseleave="stopContinuousMove">→</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Popup -->
+                <div v-if="showPopup" class="popup-overlay" @click="closePopup">
+                    <div class="popup-content" @click.stop>
+                        <div class="popup-header">
+                            <h3>{{ currentInteraction.title }}</h3>
+                            <button class="popup-close" @click="closePopup">×</button>
+                        </div>
+                        <div class="popup-body">
+                            <div v-if="currentInteraction.type === 'image'" class="popup-media">
+                                <img :src="currentInteraction.media" :alt="currentInteraction.title">
+                            </div>
+                            <div v-else-if="currentInteraction.type === 'video'" class="popup-media">
+                                <div v-if="videoLoading" class="video-loading">
+                                    <div class="loading"></div>
+                                    <p>Loading video...</p>
+                                </div>
+                                <video 
+                                    v-show="!videoLoading && !videoError"
+                                    :src="currentInteraction.media" 
+                                    controls 
+                                    autoplay 
+                                    muted
+                                    loop
+                                    preload="metadata"
+                                    @error="handleVideoError"
+                                    @loadstart="handleVideoLoadStart"
+                                    @canplay="handleVideoCanPlay"
+                                    @loadedmetadata="handleVideoLoadedMetadata"
+                                ></video>
+                                <div v-if="videoError" class="video-error">
+                                    <p>Error loading video: {{ videoError }}</p>
+                                    <div class="video-fallback">
+                                        <p><strong>Video: {{ currentInteraction.title }}</strong></p>
+                                        <p>{{ currentInteraction.description }}</p>
+                                    </div>
+                                    <button @click="retryVideo" class="btn">Retry</button>
+                                </div>
+                            </div>
+                            <div v-else-if="currentInteraction.type === '3d'" class="popup-media">
+                                <div class="three-d-placeholder">
+                                    <p>3D Asset: {{ currentInteraction.title }}</p>
+                                    <div class="three-d-viewer">3D Viewer Placeholder</div>
+                                </div>
+                            </div>
+                            <p class="popup-description">{{ currentInteraction.description }}</p>
+                        </div>
+                        <div class="popup-actions">
+                            <button 
+                                v-if="savedItems.length < 3"
+                                class="btn btn-success" 
+                                @click.prevent="addToInventory"
+                            >
+                                Add to Collection
+                            </button>
+                            <button 
+                                v-else
+                                class="btn btn-warning" 
+                                @click.prevent="showReplaceDialog = currentInteraction ? true : false; $refs.gameCanvas.blur();"
+                            >
+                                Replace Item
+                            </button>
+                            <button class="btn" @click="closePopup">Come Back Later</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Replace Item Dialog -->
+                <div v-if="showReplaceDialog" class="popup-overlay" @click="showReplaceDialog = false">
+                    <div class="popup-content" @click.stop>
+                        <h3>Replace an Item</h3>
+                        <p>Your Collection is full. Choose an item to replace:</p>
+                        <div class="replace-items">
+                            <div 
+                                v-for="(item, index) in savedItems" 
+                                :key="index"
+                                class="replace-item"
+                                @click="replaceItem(index)"
+                            >
+                                {{ item }}
+                            </div>
+                        </div>
+                        <button class="btn" @click="showReplaceDialog = false">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div v-if="!gameStarted" class="section">
+                    <h2>Community Statistics</h2>
+                    <div class="stats-section">
+                        <button 
+                            class="btn" 
+                            @click="loadStats"
+                            :disabled="loadingStats"
+                        >
+                            <span v-if="loadingStats" class="loading"></span>
+                            Refresh Stats
+                        </button>
+                        
+                        <div v-if="stats" class="stats-content">
+                            <div class="stats-summary">
+                                <div class="stat-card">
+                                    <h3>Total Players</h3>
+                                    <div class="stat-number">{{ stats.total_users }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stats-column">
+                                    <h3>Most Popular Items</h3>
+                                    <div v-if="stats.saved_items.length > 0" class="stats-list">
+                                        <div 
+                                            v-for="(item, index) in stats.saved_items.slice(0, 10)" 
+                                            :key="index"
+                                            class="stat-item"
+                                        >
+                                            <span class="stat-rank">#{{ index + 1 }}</span>
+                                            <span class="stat-name">{{ item.id }}</span>
+                                            <span class="stat-count">{{ item.count }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="no-data">No items saved yet</div>
+                                </div>
+                                
+                                <div class="stats-column">
+                                    <h3>Most Popular Avatars</h3>
+                                    <div v-if="stats.avatars.length > 0" class="stats-list">
+                                        <div 
+                                            v-for="(avatar, index) in stats.avatars.slice(0, 3)" 
+                                            :key="index"
+                                            class="stat-item"
+                                        >
+                                            <span class="stat-rank">#{{ index + 1 }}</span>
+                                            <span class="stat-name">{{ getAvatarName(avatar.avatar_id) }}</span>
+                                            <span class="stat-count">{{ avatar.count }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="no-data">No data yet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+    COLLISION MAP CREATION GUIDE:
+    
+    Create two JPG images in the static folder:
+    1. world_map.jpg - Your beautiful world map
+    2. collision_map.jpg - Same size as world_map.jpg with:
+       - WHITE pixels (RGB: 255,255,255) = Walkable areas
+       - BLACK pixels (RGB: 0,0,0) = Walls/obstacles
+    
+    You can create the collision map by:
+    1. Opening your world_map.jpg in an image editor
+    2. Creating a new layer and painting:
+       - White over walkable areas
+       - Black over walls/mountains/water
+    3. Save as collision_map.jpg
+    
+    Interaction points are defined by x,y coordinates in the interactions array.
+    The game will automatically place interaction markers at these coordinates!
+    -->
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    uid: null,
+                    selectedAvatar: null,
+                    savedItems: [],
+                    newItem: '',
+                    loading: false,
+                    saving: false,
+                    message: '',
+                    messageType: 'success',
+                    stats: null,
+                    loadingStats: false,
+                    gameStarted: false,
+                    showPopup: false,
+                    showReplaceDialog: false,
+                    currentInteraction: null,
+                    playerX: 2400,
+                    playerY: 1680,
+                    playerSpeed: 10,
+                    playerMaxSpeed: 14,
+                    playerVelocityX: 0,
+                    playerVelocityY: 0,
+                    playerAcceleration: 0.7,
+                    playerDeceleration: 0.972,
+                    playerFacingLeft: false,
+                    lastInteractionArea: null,
+                    interactionCooldown: false,
+                    mapWidth: 2000,
+                    mapHeight: 1500,
+                    canvasWidth: 800,
+                    canvasHeight: 600,
+                    // WebSocket and multiplayer
+                    websocket: null,
+                    otherPlayers: {},
+                    updateInterval: null,
+                    pingInterval: null,
+                    lastSentPosition: { x: 0, y: 0 },
+                    positionThreshold: 5, // Only send updates if moved more than 5 pixels
+                    avatars: [
+                        { id: 1, name: 'Banana', image: '/static/avatars/banana.png' },
+                        { id: 2, name: 'Slug', image: '/static/avatars/slug.png' },
+                        { id: 3, name: 'Clown Star', image: '/static/avatars/clownstar.png' },
+                        { id: 4, name: 'devil', image: '/static/avatars/devil.png' },
+                        { id: 5, name: 'Dinocoral', image: '/static/avatars/dinocoral.png' },
+                        { id: 6, name: 'Dog', image: '/static/avatars/dog.png' },
+                        { id: 7, name: 'Fish?', image: '/static/avatars/fish.png' },
+                        { id: 8, name: 'Flower', image: '/static/avatars/flower.png' },
+                        { id: 9, name: 'mike', image: '/static/avatars/mike.png' },
+                        { id: 10, name: 'pingreen', image: '/static/avatars/pingreen.png' },
+                        { id: 11, name: 'Red Eye', image: '/static/avatars/redeye.png' },
+                        { id: 12, name: 'Sushi', image: '/static/avatars/sushi.png' },
+                        { id: 13, name: 'volcano', image: '/static/avatars/volcano.png' },
+                        { id: 14, name: 'WHALE', image: '/static/avatars/whale.png' },
+                    ],
+                    // Game world data
+                    worldMap: null,
+                    overlayMap: null,
+                    collisionMap: null,
+                    interactionMap: null,
+                    avatarImage: null,
+                    avatarWidth: 96,
+                    avatarHeight: 96,
+                    videoError: null,
+                    videoLoading: false,
+                    isMobile: false,
+                    mobileMoveInterval: null,
+                    activeDirection: null,
+                    interactions: [
+                        {    
+                            "x": 2400,
+                            "y": 1390,
+                            "title": "Welcome",
+                            "description": "You've arrived!",
+                            "item": "arrival",
+                            "type": "image",
+                            "media": "/static/chopped_videos/left_of_hq/4a.mp4",
+                            "id": 0
+                        },
+                        {
+                            id: 1,
+                            x: 2400,
+                            y: 940,
+                            title: "HQ",
+                            description: "Kaleidoscope View of Fish",
+                            type: "video",
+                            media: "/static/chopped_videos/fish_restaurant/2a.mp4",
+                            item: "Mirror Fish"
+                        },
+                        {
+                            id: 2,
+                            x: 2400,
+                            y: 640,
+                            title: "Underwater Cave",
+                            description: "A beautiful underwater cave system",
+                            type: "video",
+                            media: "/static/videos/1.mp4",
+                            item: "Underwater Pearl"
+                        },
+                        {
+                            id: 3,
+                            x: 1200,
+                            y: 100,
+                            title: "Floating Island",
+                            description: "A magical floating island in the sky",
+                            type: "3d",
+                            media: "",
+                            item: "Sky Crystal"
+                        },
+                        {
+                            id: 4,
+                            x: 700,
+                            y: 300,
+                            title: "Crystal Forest",
+                            description: "A forest made entirely of crystals",
+                            type: "image",
+                            media: "https://via.placeholder.com/400x300/00CED1/ffffff?text=Crystal+Forest",
+                            item: "Crystal Shard"
+                        },
+                        {
+                            id: 5,
+                            x: 1600,
+                            y: 500,
+                            title: "Volcanic Springs",
+                            description: "Hot springs with healing properties",
+                            type: "video",
+                            media: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+                            item: "Healing Water"
+                        }
+                    ]
+                }
+            },
+            async mounted() {
+                await this.initializeSession();
+                this.detectMobile();
+                window.addEventListener('resize', this.handleResize);
+                this.checkVideoSupport();
+            },
+            beforeUnmount() {
+                window.removeEventListener('resize', this.handleResize);
+                this.stopContinuousMove();
+                this.disconnectWebSocket();
+            },
+            methods: {
+                async initializeSession() {
+                    this.loading = true;
+                    
+                    try {
+                        // Check localStorage for existing UID
+                        const storedUid = localStorage.getItem('dinamap_uid');
+                        
+                        if (storedUid) {
+                            this.uid = storedUid;
+                            // Load existing user data from server
+                            await this.loadUserData();
+                        } else {
+                            // Get new UID from server
+                            await this.getNewUid();
+                        }
+                    } catch (error) {
+                        this.showMessage('Failed to initialize session: ' + error.message, 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async loadUserData() {
+                    try {
+                        const response = await fetch(`/user/${this.uid}`);
+                        
+                        if (!response.ok) {
+                            if (response.status === 404) {
+                                // User not found, clear localStorage and get new UID
+                                localStorage.removeItem('dinamap_uid');
+                                await this.getNewUid();
+                                return;
+                            }
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const userData = await response.json();
+                        
+                        // Set avatar if exists
+                        if (userData.avatar) {
+                            this.selectedAvatar = userData.avatar;
+                        }
+                        
+                        // Set saved items if exists
+                        if (userData.saved) {
+                            if (Array.isArray(userData.saved)) {
+                                this.savedItems = userData.saved;
+                            } else {
+                                this.savedItems = [userData.saved];
+                            }
+                        }
+                        
+                        this.showMessage('Welcome Back!', 'success');
+                        
+                        // If user already has an avatar, start the game automatically
+                        if (this.selectedAvatar) {
+                            this.loadAvatarImage();
+                            this.startGame();
+                        }
+                    } catch (error) {
+                        this.showMessage('Failed to load user data: ' + error.message, 'error');
+                    }
+                },
+
+                async getNewUid() {
+                    try {
+                        const response = await fetch('/begin', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        this.uid = data.uid;
+                        
+                        // Store in localStorage
+                        localStorage.setItem('dinamap_uid', this.uid);
+                        
+                        this.showMessage('Welcome! Pick an avatar to continue', 'success');
+                    } catch (error) {
+                        throw new Error('Failed to create new session: ' + error.message);
+                    }
+                },
+
+                async selectAvatar(avatarId) {
+                    this.selectedAvatar = avatarId;
+                    // Automatically save avatar and start game
+                    await this.saveAvatar();
+                },
+
+                async saveAvatar() {
+                    if (!this.selectedAvatar) return;
+                    
+                    this.saving = true;
+                    
+                    try {
+                        const response = await fetch('/avatar', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                uid: this.uid,
+                                avatar_id: this.selectedAvatar
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        this.showMessage('Avatar saved successfully', 'success');
+                        
+                        // Automatically start the game after saving avatar
+                        this.startGame();
+                    } catch (error) {
+                        this.showMessage('Failed to save avatar: ' + error.message, 'error');
+                    } finally {
+                        this.saving = false;
+                    }
+                },
+
+                addItem() {
+                    const item = this.newItem.trim();
+                    if (item && !this.savedItems.includes(item)) {
+                        this.savedItems.push(item);
+                        this.newItem = '';
+                    }
+                },
+
+                async saveItems() {
+                    if (this.savedItems.length === 0) return;
+                    
+                    this.saving = true;
+                    
+                    try {
+                        const response = await fetch('/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                uid: this.uid,
+                                saved_ids: this.savedItems
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        this.showMessage('Items saved successfully', 'success');
+                    } catch (error) {
+                        this.showMessage('Failed to save items: ' + error.message, 'error');
+                    } finally {
+                        this.saving = false;
+                    }
+                },
+
+                showMessage(text, type = 'success') {
+                    this.message = text;
+                    this.messageType = type;
+                    
+                    // Auto-hide message after 5 seconds
+                    setTimeout(() => {
+                        this.message = '';
+                    }, 5000);
+                },
+
+                async loadStats() {
+                    this.loadingStats = true;
+                    
+                    try {
+                        const response = await fetch('/stats');
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        this.stats = await response.json();
+                        this.showMessage('Statistics loaded successfully', 'success');
+                    } catch (error) {
+                        this.showMessage('Failed to load statistics: ' + error.message, 'error');
+                    } finally {
+                        this.loadingStats = false;
+                    }
+                },
+
+                // Game methods
+                getAvatarName(avatarId) {
+                    // Convert to integer for comparison since backend might send as string
+                    const id = parseInt(avatarId);
+                    const avatar = this.avatars.find(a => a.id === id);
+                    return avatar ? avatar.name : `Avatar ${avatarId}`;
+                },
+
+                startGame() {
+                    this.gameStarted = true;
+                    this.$nextTick(() => {
+                        this.loadAvatarImage();
+                        this.initGame();
+                        this.$refs.gameCanvas.focus();
+                        // Connect to WebSocket for multiplayer
+                        this.connectWebSocket();
+                    });
+                },
+
+                exitGame() {
+                    this.gameStarted = false;
+                    this.showPopup = false;
+                    this.showReplaceDialog = false;
+                    this.stopContinuousMove();
+                    // Disconnect from WebSocket
+                    this.disconnectWebSocket();
+                    // Automatically refresh stats when exiting game
+                    this.loadStats();
+                },
+
+                loadAvatarImage() {
+                    if (!this.selectedAvatar) {
+                        this.avatarImage = null;
+                        return;
+                    }
+                    
+                    // Find the selected avatar
+                    const avatar = this.avatars.find(a => a.id === this.selectedAvatar);
+                    if (!avatar || !avatar.image) {
+                        this.avatarImage = null;
+                        return;
+                    }
+                    
+                    // Create new image and try to load it
+                    const img = new Image();
+                    img.onload = () => {
+                        this.avatarImage = img;
+                        // Calculate scaled dimensions maintaining aspect ratio
+                        const maxSize = 96;
+                        const aspectRatio = img.width / img.height;
+                        
+                        if (img.width > img.height) {
+                            // Landscape image
+                            this.avatarWidth = maxSize;
+                            this.avatarHeight = maxSize / aspectRatio;
+                        } else {
+                            // Portrait or square image
+                            this.avatarHeight = maxSize;
+                            this.avatarWidth = maxSize * aspectRatio;
+                        }
+                    };
+                    img.onerror = () => {
+                        console.log('Failed to load avatar image:', avatar.image);
+                        this.avatarImage = null;
+                    };
+                    img.src = avatar.image;
+                },
+
+                initGame() {
+                    const canvas = this.$refs.gameCanvas;
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = this.canvasWidth;
+                    canvas.height = this.canvasHeight;
+                    
+                    // Create simple world map (grass with some obstacles)
+                    this.createWorldMap();
+                    
+                    // Start game loop
+                    this.gameLoop();
+                },
+
+                createWorldMap() {
+                    // Load world map from JPG image
+                    this.worldMap = new Image();
+                    this.worldMap.onload = () => {
+                        this.mapWidth = this.worldMap.width;
+                        this.mapHeight = this.worldMap.height;
+                        
+                        // Load overlay map after world map is loaded
+                        this.loadOverlayMap();
+                    };
+                    this.worldMap.onerror = () => {
+                        console.error('Failed to load world map image');
+                        this.createFallbackWorldMap();
+                    };
+                    this.worldMap.src = '/static/world_map.jpg';
+                },
+
+                loadOverlayMap() {
+                    // Load overlay map from PNG image
+                    this.overlayMap = new Image();
+                    this.overlayMap.onload = () => {
+                        // Load collision map after overlay map is loaded
+                        this.loadCollisionMap();
+                    };
+                    this.overlayMap.onerror = () => {
+                        console.warn('Failed to load overlay map image, continuing without overlay');
+                        // Continue without overlay
+                        this.loadCollisionMap();
+                    };
+                    this.overlayMap.src = '/static/overlay.png';
+                },
+
+                loadCollisionMap() {
+                    // Load collision map from JPG image
+                    this.collisionMap = new Image();
+                    this.collisionMap.onload = () => {
+                        // Create collision data from image
+                        this.createCollisionData();
+                    };
+                    this.collisionMap.onerror = () => {
+                        console.error('Failed to load collision map image');
+                        this.createFallbackCollisionMap();
+                    };
+                    this.collisionMap.src = '/static/collision_map.jpg';
+                },
+
+                createCollisionData() {
+                    // Create a canvas to read pixel data from collision map
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = this.collisionMap.width;
+                    canvas.height = this.collisionMap.height;
+                    
+                    // Draw collision map to canvas
+                    ctx.drawImage(this.collisionMap, 0, 0);
+                    
+                    // Get pixel data
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    
+                    // Create collision array
+                    this.collisionData = new Array(canvas.width);
+                    this.interactionData = new Array(canvas.width);
+                    
+                    for (let x = 0; x < canvas.width; x++) {
+                        this.collisionData[x] = new Array(canvas.height);
+                        this.interactionData[x] = new Array(canvas.height);
+                        
+                        for (let y = 0; y < canvas.height; y++) {
+                            const index = (y * canvas.width + x) * 4;
+                            const r = data[index];
+                            const g = data[index + 1];
+                            const b = data[index + 2];
+                            
+                            // Check pixel color
+                            if (r > 200 && g > 200 && b > 200) {
+                                // White - walkable
+                                this.collisionData[x][y] = false;
+                                this.interactionData[x][y] = null;
+                            } else {
+                                // Black or other colors - wall
+                                this.collisionData[x][y] = true;
+                                this.interactionData[x][y] = null;
+                            }
+                        }
+                    }
+                    
+                    // Place interactions at predefined coordinates
+                    this.placeInteractionsAtCoordinates();
+                },
+
+                placeInteractionsAtCoordinates() {
+                    // Place interactions at their predefined x,y coordinates with a larger interaction zone
+                    this.interactions.forEach(interaction => {
+                        const x = Math.floor(interaction.x);
+                        const y = Math.floor(interaction.y);
+                        const interactionRadius = 50; // 50 pixel radius for interaction zone
+                        
+                        if (x >= 0 && x < this.mapWidth && y >= 0 && y < this.mapHeight) {
+                            // Create a circular interaction zone around the center point
+                            for (let dx = -interactionRadius; dx <= interactionRadius; dx++) {
+                                for (let dy = -interactionRadius; dy <= interactionRadius; dy++) {
+                                    const checkX = x + dx;
+                                    const checkY = y + dy;
+                                    
+                                    // Check if within the circular zone
+                                    if (dx * dx + dy * dy <= interactionRadius * interactionRadius) {
+                                        if (checkX >= 0 && checkX < this.mapWidth && 
+                                            checkY >= 0 && checkY < this.mapHeight) {
+                                            this.interactionData[checkX][checkY] = interaction;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+
+                findInteractionAt(x, y) {
+                    // Find which interaction should be at this pixel
+                    // You can customize this logic based on your collision map
+                    // For now, we'll use a simple pattern to assign interactions
+                    const interactionId = Math.floor((x + y) % this.interactions.length);
+                    return this.interactions[interactionId] || null;
+                },
+
+                createFallbackWorldMap() {
+                    // Fallback to generated world if image fails to load
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    canvas.width = this.mapWidth;
+                    canvas.height = this.mapHeight;
+                    
+                    // Fill with grass
+                    ctx.fillStyle = '#90EE90';
+                    ctx.fillRect(0, 0, this.mapWidth, this.mapHeight);
+                    
+                    // Add some water areas
+                    ctx.fillStyle = '#4682B4';
+                    ctx.fillRect(100, 100, 200, 150);
+                    ctx.fillRect(1400, 800, 300, 200);
+                    
+                    // Add some forest areas
+                    ctx.fillStyle = '#228B22';
+                    ctx.fillRect(600, 200, 300, 250);
+                    ctx.fillRect(200, 600, 400, 300);
+                    
+                    // Add some mountain areas
+                    ctx.fillStyle = '#696969';
+                    ctx.fillRect(1000, 100, 400, 300);
+                    ctx.fillRect(1600, 400, 300, 400);
+                    
+                    this.worldMap = canvas;
+                    // Try to load overlay even with fallback world map
+                    this.loadOverlayMap();
+                },
+
+                createFallbackCollisionMap() {
+                    // Create fallback collision data
+                    this.collisionData = new Array(this.mapWidth);
+                    this.interactionData = new Array(this.mapWidth);
+                    
+                    for (let x = 0; x < this.mapWidth; x++) {
+                        this.collisionData[x] = new Array(this.mapHeight);
+                        this.interactionData[x] = new Array(this.mapHeight);
+                        
+                        for (let y = 0; y < this.mapHeight; y++) {
+                            // Check if this pixel is in water or mountain areas
+                            const isWater = (x >= 100 && x < 300 && y >= 100 && y < 250) ||
+                                           (x >= 1400 && x < 1700 && y >= 800 && y < 1000);
+                            const isMountain = (x >= 1000 && x < 1400 && y >= 100 && y < 400) ||
+                                              (x >= 1600 && x < 1900 && y >= 400 && y < 800);
+                            
+                            this.collisionData[x][y] = isWater || isMountain;
+                            this.interactionData[x][y] = null;
+                        }
+                    }
+                    
+                    // Add interaction points at predefined coordinates with larger zones
+                    this.placeInteractionsAtCoordinates();
+                },
+
+                gameLoop() {
+                    if (!this.gameStarted) return;
+                    
+                    // Apply physics and movement
+                    this.updatePlayerPhysics();
+                    
+                    this.render();
+                    requestAnimationFrame(() => this.gameLoop());
+                },
+
+                updatePlayerPhysics() {
+                    // Don't run physics if collision data isn't ready
+                    if (!this.collisionData) {
+                        return;
+                    }
+                    
+                    // Apply deceleration (friction/air resistance)
+                    this.playerVelocityX *= this.playerDeceleration;
+                    this.playerVelocityY *= this.playerDeceleration;
+                    
+                    // Stop very small movements to prevent jitter
+                    if (Math.abs(this.playerVelocityX) < 0.1) this.playerVelocityX = 0;
+                    if (Math.abs(this.playerVelocityY) < 0.1) this.playerVelocityY = 0;
+                    
+                    // Update player facing direction based on velocity
+                    if (this.playerVelocityX > 0.1) {
+                        this.playerFacingLeft = false;
+                    } else if (this.playerVelocityX < -0.1) {
+                        this.playerFacingLeft = true;
+                    }
+                    
+                    // Calculate new position
+                    let newX = this.playerX + this.playerVelocityX;
+                    let newY = this.playerY + this.playerVelocityY;
+                    
+                    // Check collision for X movement
+                    if (this.canMoveTo(newX, this.playerY)) {
+                        this.playerX = Math.max(0, Math.min(this.mapWidth, newX));
+                    } else {
+                        // Hit a wall, stop X velocity
+                        this.playerVelocityX = 0;
+                    }
+                    
+                    // Check collision for Y movement
+                    if (this.canMoveTo(this.playerX, newY)) {
+                        this.playerY = Math.max(0, Math.min(this.mapHeight, newY));
+                    } else {
+                        // Hit a wall, stop Y velocity
+                        this.playerVelocityY = 0;
+                    }
+                    
+                    // Check for automatic interactions after movement
+                    this.checkAutomaticInteraction();
+                },
+
+                render() {
+                    const canvas = this.$refs.gameCanvas;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+                    
+                    // Calculate camera position (center on player)
+                    const cameraX = this.playerX - this.canvasWidth / 2;
+                    const cameraY = this.playerY - this.canvasHeight / 2;
+                    
+                    // Draw world map (background)
+                    if (this.worldMap) {
+                        ctx.drawImage(this.worldMap, -cameraX, -cameraY);
+                    }
+                    
+                    // Draw interactions
+                    this.drawInteractions(ctx, cameraX, cameraY);
+                    
+                    // Draw other players
+                    this.drawOtherPlayers(ctx, cameraX, cameraY);
+                    
+                    // Draw player
+                    this.drawPlayer(ctx, cameraX, cameraY);
+                    
+                    // Draw overlay map (clouds, roofs, treetops - on top of player)
+                    if (this.overlayMap) {
+                        ctx.drawImage(this.overlayMap, -cameraX, -cameraY);
+                    }
+                },
+
+                drawInteractions(ctx, cameraX, cameraY) {
+                    // Draw markers at predefined interaction coordinates
+                    const markerRadius = 25;
+                    const revealDistance = markerRadius * 6; // 75px
+                    this.interactions.forEach(interaction => {
+                        // Calculate world distance from player to interaction
+                        const dx = this.playerX - interaction.x;
+                        const dy = this.playerY - interaction.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance > revealDistance) {
+                            // Too far, don't draw marker at all
+                            return;
+                        }
+                        const screenX = interaction.x - cameraX;
+                        const screenY = interaction.y - cameraY;
+                        // Only draw if on screen (accounting for marker size)
+                        if (screenX >= -revealDistance && screenX <= this.canvasWidth + revealDistance &&
+                            screenY >= -revealDistance && screenY <= this.canvasHeight + revealDistance) {
+                            // Draw interaction zone indicator (subtle)
+                            ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                            ctx.lineWidth = 2;
+                            ctx.setLineDash([5, 5]);
+                            ctx.beginPath();
+                            ctx.arc(screenX, screenY, 50, 0, 2 * Math.PI);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                            // Draw interaction marker
+                            ctx.fillStyle = '#FFD700';
+                            ctx.beginPath();
+                            ctx.arc(screenX, screenY, markerRadius, 0, 2 * Math.PI);
+                            ctx.fill();
+                            ctx.strokeStyle = '#FF8C00';
+                            ctx.lineWidth = 4;
+                            ctx.stroke();
+                            // Draw interaction icon
+                            ctx.fillStyle = '#FF4500';
+                            ctx.font = '16px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('!', screenX, screenY + 5);
+                        }
+                    });
+                },
+
+                drawPlayer(ctx, cameraX, cameraY) {
+                    const screenX = this.playerX - cameraX;
+                    const screenY = this.playerY - cameraY;
+                    
+                    // Try to draw selected avatar image first
+                    if (this.selectedAvatar && this.avatarImage) {
+                        // Save the current context state
+                        ctx.save();
+                        
+                        // Calculate avatar position
+                        const halfWidth = this.avatarWidth / 2;
+                        const halfHeight = this.avatarHeight / 2;
+                        
+                        // Flip horizontally if facing left
+                        if (this.playerFacingLeft) {
+                            ctx.scale(-1, 1);
+                            ctx.drawImage(this.avatarImage, -screenX - halfWidth, screenY - halfHeight, this.avatarWidth, this.avatarHeight);
+                        } else {
+                            ctx.drawImage(this.avatarImage, screenX - halfWidth, screenY - halfHeight, this.avatarWidth, this.avatarHeight);
+                        }
+                        
+                        // Restore the context state
+                        ctx.restore();
+                    } else {
+                        // Fallback to red dot marker
+                        ctx.fillStyle = '#FF6B6B';
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, 12, 0, 2 * Math.PI);
+                        ctx.fill();
+                        
+                        ctx.strokeStyle = '#FF4500';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
+                        // Draw player direction indicator
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, 6, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                },
+
+                handleKeyPress(event) {
+                    if (!this.gameStarted) return;
+                    
+                    // Set movement direction based on key press
+                    switch(event.key.toLowerCase()) {
+                        case 'w':
+                        case 'arrowup':
+                            this.playerVelocityY = Math.max(this.playerVelocityY - this.playerAcceleration, -this.playerMaxSpeed);
+                            break;
+                        case 's':
+                        case 'arrowdown':
+                            this.playerVelocityY = Math.min(this.playerVelocityY + this.playerAcceleration, this.playerMaxSpeed);
+                            break;
+                        case 'a':
+                        case 'arrowleft':
+                            this.playerVelocityX = Math.max(this.playerVelocityX - this.playerAcceleration, -this.playerMaxSpeed);
+                            break;
+                        case 'd':
+                        case 'arrowright':
+                            this.playerVelocityX = Math.min(this.playerVelocityX + this.playerAcceleration, this.playerMaxSpeed);
+                            break;
+                        default:
+                            return;
+                    }
+                    
+                    event.preventDefault();
+                },
+
+                canMoveTo(x, y) {
+                    const pixelX = Math.floor(x);
+                    const pixelY = Math.floor(y);
+                    
+                    // Check if collision data exists
+                    if (!this.collisionData || !this.collisionData[pixelX]) {
+                        return true; // Allow movement if no collision data
+                    }
+                    
+                    if (pixelX < 0 || pixelX >= this.mapWidth ||
+                        pixelY < 0 || pixelY >= this.mapHeight) {
+                        return false;
+                    }
+                    
+                    return !this.collisionData[pixelX][pixelY];
+                },
+
+                checkAutomaticInteraction() {
+                    // Don't check interactions if data isn't ready
+                    if (!this.interactionData) {
+                        return;
+                    }
+                    
+                    const pixelX = Math.floor(this.playerX);
+                    const pixelY = Math.floor(this.playerY);
+                    
+                    if (pixelX >= 0 && pixelX < this.mapWidth &&
+                        pixelY >= 0 && pixelY < this.mapHeight) {
+                        
+                        const interaction = this.interactionData[pixelX][pixelY];
+                        if (interaction && typeof interaction === 'object') {
+                            // Check if we're at a new interaction point
+                            if (interaction !== this.lastInteractionArea && !this.interactionCooldown) {
+                                console.log('Setting currentInteraction:', interaction);
+                                this.currentInteraction = interaction;
+                                this.lastInteractionArea = interaction;
+                                this.interactionCooldown = true;
+                                this.showPopup = true;
+                                // Reset video state for new interaction
+                                this.resetVideoState();
+                            }
+                        } else {
+                            // Player moved away from interaction point
+                            if (this.lastInteractionArea && !this.isAtInteractionPoint(pixelX, pixelY)) {
+                                this.lastInteractionArea = null;
+                                this.interactionCooldown = false;
+                            }
+                        }
+                    }
+                },
+
+                isAtInteractionPoint(x, y) {
+                    if (!this.interactionData || !this.interactionData[x]) {
+                        return false;
+                    }
+                    const interaction = this.interactionData[x][y];
+                    return interaction && typeof interaction === 'object';
+                },
+
+                checkInteraction() {
+                    // Legacy method - kept for compatibility but not used
+                    this.checkAutomaticInteraction();
+                },
+
+                async addToInventory() {
+                    console.log('addToInventory called, currentInteraction:', this.currentInteraction);
+                    
+                    if (!this.currentInteraction) {
+                        this.showMessage('Error: No item to add', 'error');
+                        this.closePopup();
+                        return;
+                    }
+                    
+                    if (this.savedItems.length < 3) {
+                        const itemToAdd = this.currentInteraction.item;
+                        this.savedItems.push(itemToAdd);
+                        this.showMessage(`Added ${itemToAdd} to collection!`, 'success');
+                        
+                        // Automatically save to server
+                        await this.saveItemsToServer();
+                        
+                        // Close popup after everything is done
+                        this.closePopup();
+                    }
+                },
+
+                async replaceItem(index) {
+                    if (!this.currentInteraction) {
+                        this.showMessage('Error: No item to replace with', 'error');
+                        this.showReplaceDialog = false;
+                        return;
+                    }
+                    
+                    this.savedItems[index] = this.currentInteraction.item;
+                    this.showReplaceDialog = false;
+                    this.closePopup();
+                    this.showMessage(`Replaced item with ${this.currentInteraction.item}!`, 'success');
+                    
+                    // Save to server
+                    await this.saveItemsToServer();
+                },
+
+                async removeItem(index) {
+                    this.savedItems.splice(index, 1);
+                    
+                    // Save to server
+                    await this.saveItemsToServer();
+                },
+
+                async saveItemsToServer() {
+                    try {
+                        const response = await fetch('/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                uid: this.uid,
+                                saved_ids: this.savedItems
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        this.showMessage('Failed to save items: ' + error.message, 'error');
+                    }
+                },
+
+                closePopup() {
+                    console.log('closePopup called, showReplaceDialog:', this.showReplaceDialog, 'currentInteraction:', this.currentInteraction);
+                    this.showPopup = false;
+                    // Only clear currentInteraction if we're not showing the replace dialog
+                    if (!this.showReplaceDialog) {
+                        console.log('Clearing currentInteraction');
+                        this.currentInteraction = null;
+                    } else {
+                        console.log('Keeping currentInteraction for replace dialog');
+                    }
+                    this.showReplaceDialog = false;
+                    this.$refs.gameCanvas.focus();
+                },
+
+                // Video handling methods
+                handleVideoError(event) {
+                    console.error('Video error:', event);
+                    this.videoLoading = false;
+                    const video = event.target;
+                    let errorMessage = 'Failed to load video. ';
+                    
+                    if (video.error) {
+                        switch (video.error.code) {
+                            case 1:
+                                errorMessage += 'Video loading was aborted.';
+                                break;
+                            case 2:
+                                errorMessage += 'Network error while loading video.';
+                                break;
+                            case 3:
+                                errorMessage += 'Video decoding failed. The video format may not be supported.';
+                                break;
+                            case 4:
+                                errorMessage += 'Video is not supported by this browser.';
+                                break;
+                            default:
+                                errorMessage += 'Unknown error occurred.';
+                        }
+                    } else {
+                        errorMessage += 'Please try again.';
+                    }
+                    
+                    this.videoError = errorMessage;
+                },
+
+                handleVideoLoadStart() {
+                    console.log('Video loading started for:', this.currentInteraction?.media);
+                    this.videoError = null;
+                    this.videoLoading = true;
+                },
+
+                handleVideoCanPlay() {
+                    console.log('Video can play');
+                    this.videoError = null;
+                    this.videoLoading = false;
+                },
+
+                handleVideoLoadedMetadata() {
+                    console.log('Video metadata loaded');
+                    this.videoError = null;
+                    this.videoLoading = false;
+                },
+
+                resetVideoState() {
+                    this.videoError = null;
+                    this.videoLoading = false;
+                },
+
+                checkVideoSupport() {
+                    const testVideo = document.createElement('video');
+                    const canPlayMP4 = testVideo.canPlayType('video/mp4');
+                    const canPlayWebM = testVideo.canPlayType('video/webm');
+                    
+                    console.log('Browser video support:');
+                    console.log('- MP4:', canPlayMP4);
+                    console.log('- WebM:', canPlayWebM);
+                    console.log('- User Agent:', navigator.userAgent);
+                    
+                    if (!canPlayMP4 && !canPlayWebM) {
+                        console.warn('No video format support detected!');
+                    }
+                },
+
+                retryVideo() {
+                    this.videoError = null;
+                    this.videoLoading = true;
+                    // Force video reload by updating the src
+                    const video = document.querySelector('video');
+                    if (video) {
+                        const currentSrc = video.src;
+                        video.src = '';
+                        setTimeout(() => {
+                            video.src = currentSrc;
+                        }, 100);
+                    }
+                },
+
+                // Mobile movement handling
+                handleMobileMove(direction, event) {
+                    if (!this.gameStarted) return;
+                    
+                    // Prevent default behavior to avoid scrolling
+                    if (event) {
+                        event.preventDefault();
+                    }
+                    
+                    // Start continuous movement
+                    this.startContinuousMove(direction);
+                },
+
+                startContinuousMove(direction) {
+                    // Clear any existing interval
+                    this.stopContinuousMove();
+                    
+                    // Set active direction
+                    this.activeDirection = direction;
+                    
+                    // Add visual feedback
+                    this.addButtonActiveClass(direction);
+                    
+                    // Apply initial acceleration
+                    this.executeMove(direction);
+                    
+                    // Start continuous acceleration interval
+                    this.mobileMoveInterval = setInterval(() => {
+                        this.executeMove(direction);
+                    }, 50); // Apply acceleration every 50ms for smooth momentum
+                },
+
+                stopContinuousMove() {
+                    if (this.mobileMoveInterval) {
+                        clearInterval(this.mobileMoveInterval);
+                        this.mobileMoveInterval = null;
+                    }
+                    this.activeDirection = null;
+                    this.removeButtonActiveClass();
+                },
+
+                executeMove(direction) {
+                    // Set movement direction based on mobile input
+                    switch(direction) {
+                        case 'up':
+                            this.playerVelocityY = Math.max(this.playerVelocityY - this.playerAcceleration, -this.playerMaxSpeed);
+                            break;
+                        case 'down':
+                            this.playerVelocityY = Math.min(this.playerVelocityY + this.playerAcceleration, this.playerMaxSpeed);
+                            break;
+                        case 'left':
+                            this.playerVelocityX = Math.max(this.playerVelocityX - this.playerAcceleration, -this.playerMaxSpeed);
+                            break;
+                        case 'right':
+                            this.playerVelocityX = Math.min(this.playerVelocityX + this.playerAcceleration, this.playerMaxSpeed);
+                            break;
+                        default:
+                            return;
+                    }
+                },
+
+                detectMobile() {
+                    // Check if device is mobile
+                    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+                    
+                    if (this.isMobile) {
+                        // Adjust canvas size for mobile - portrait orientation
+                        this.canvasWidth = Math.min(window.innerWidth - 20, 800);
+                        // Use most of the screen height for the game
+                        this.canvasHeight = Math.min(window.innerHeight - 100, 800);
+                    }
+                },
+
+                handleResize() {
+                    this.detectMobile();
+                    if (this.gameStarted && this.$refs.gameCanvas) {
+                        // Reinitialize canvas with new size
+                        this.initGame();
+                    }
+                },
+
+                addButtonActiveClass(direction) {
+                    // Remove active class from all buttons
+                    this.removeButtonActiveClass();
+                    
+                    // Add active class to the pressed button
+                    const button = document.querySelector(`.control-btn.${direction}`);
+                    if (button) {
+                        button.classList.add('active');
+                    }
+                },
+
+                removeButtonActiveClass() {
+                    // Remove active class from all control buttons
+                    const buttons = document.querySelectorAll('.control-btn');
+                    buttons.forEach(button => {
+                        button.classList.remove('active');
+                    });
+                },
+
+                // WebSocket methods
+                connectWebSocket() {
+                    if (!this.uid || !this.selectedAvatar) return;
+                    
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const wsUrl = `${protocol}//${window.location.host}/ws/${this.uid}`;
+                    
+                    try {
+                        this.websocket = new WebSocket(wsUrl);
+                        
+                        this.websocket.onopen = () => {
+                            console.log('WebSocket connected');
+                            // Send initial player data
+                            this.sendPlayerUpdate();
+                            
+                            // Start sending position updates
+                            this.updateInterval = setInterval(() => {
+                                this.sendPlayerUpdate();
+                            }, 100); // Send updates every 100ms
+                            
+                            // Start keep-alive ping
+                            this.pingInterval = setInterval(() => {
+                                if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                                    this.websocket.send(JSON.stringify({ type: 'ping' }));
+                                }
+                            }, 30000); // Ping every 30 seconds
+                        };
+                        
+                        this.websocket.onmessage = (event) => {
+                            const data = JSON.parse(event.data);
+                            this.handleWebSocketMessage(data);
+                        };
+                        
+                        this.websocket.onerror = (error) => {
+                            console.error('WebSocket error:', error);
+                        };
+                        
+                        this.websocket.onclose = () => {
+                            console.log('WebSocket disconnected');
+                            this.clearUpdateInterval();
+                        };
+                    } catch (error) {
+                        console.error('Failed to connect WebSocket:', error);
+                    }
+                },
+
+                disconnectWebSocket() {
+                    this.clearUpdateInterval();
+                    if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                        this.websocket.close();
+                    }
+                    this.websocket = null;
+                    this.otherPlayers = {};
+                },
+
+                clearUpdateInterval() {
+                    if (this.updateInterval) {
+                        clearInterval(this.updateInterval);
+                        this.updateInterval = null;
+                    }
+                    if (this.pingInterval) {
+                        clearInterval(this.pingInterval);
+                        this.pingInterval = null;
+                    }
+                },
+
+                sendPlayerUpdate() {
+                    if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) return;
+                    
+                    // Only send if position changed significantly
+                    const dx = Math.abs(this.playerX - this.lastSentPosition.x);
+                    const dy = Math.abs(this.playerY - this.lastSentPosition.y);
+                    
+                    if (dx > this.positionThreshold || dy > this.positionThreshold) {
+                        this.websocket.send(JSON.stringify({
+                            type: 'player_update',
+                            x: Math.round(this.playerX),
+                            y: Math.round(this.playerY),
+                            avatar: this.selectedAvatar,
+                            facingLeft: this.playerFacingLeft
+                        }));
+                        
+                        this.lastSentPosition.x = this.playerX;
+                        this.lastSentPosition.y = this.playerY;
+                    }
+                },
+
+                handleWebSocketMessage(data) {
+                    switch (data.type) {
+                        case 'players_list':
+                            // Initialize all current players
+                            this.otherPlayers = {};
+                            for (const [uid, playerData] of Object.entries(data.players)) {
+                                if (uid !== this.uid) {
+                                    this.otherPlayers[uid] = playerData;
+                                    this.loadOtherPlayerAvatar(uid, playerData.avatar);
+                                }
+                            }
+                            break;
+                            
+                        case 'player_joined':
+                            if (data.uid !== this.uid) {
+                                this.otherPlayers[data.uid] = data.data;
+                                this.loadOtherPlayerAvatar(data.uid, data.data.avatar);
+                            }
+                            break;
+                            
+                        case 'player_update':
+                            if (data.uid !== this.uid) {
+                                this.otherPlayers[data.uid] = data.data;
+                                // Load avatar if not already loaded
+                                if (!this.otherPlayers[data.uid].avatarImage && data.data.avatar) {
+                                    this.loadOtherPlayerAvatar(data.uid, data.data.avatar);
+                                }
+                            }
+                            break;
+                            
+                        case 'player_left':
+                            delete this.otherPlayers[data.uid];
+                            break;
+                            
+                        case 'pong':
+                            // Keep-alive response
+                            break;
+                    }
+                },
+
+                loadOtherPlayerAvatar(uid, avatarId) {
+                    if (!avatarId) return;
+                    
+                    const avatar = this.avatars.find(a => a.id === avatarId);
+                    if (!avatar || !avatar.image) return;
+                    
+                    const img = new Image();
+                    img.onload = () => {
+                        if (this.otherPlayers[uid]) {
+                            this.otherPlayers[uid].avatarImage = img;
+                        }
+                    };
+                    img.src = avatar.image;
+                },
+
+                drawOtherPlayers(ctx, cameraX, cameraY) {
+                    for (const [uid, player] of Object.entries(this.otherPlayers)) {
+                        if (!player.x || !player.y) continue;
+                        
+                        const screenX = player.x - cameraX;
+                        const screenY = player.y - cameraY;
+                        
+                        // Only draw if on screen
+                        if (screenX >= -100 && screenX <= this.canvasWidth + 100 &&
+                            screenY >= -100 && screenY <= this.canvasHeight + 100) {
+                            
+                            // Draw player avatar or fallback
+                            if (player.avatarImage) {
+                                ctx.save();
+                                
+                                // Make other players slightly transparent
+                                ctx.globalAlpha = 0.8;
+                                
+                                const halfWidth = this.avatarWidth / 2;
+                                const halfHeight = this.avatarHeight / 2;
+                                
+                                if (player.facingLeft) {
+                                    ctx.scale(-1, 1);
+                                    ctx.drawImage(player.avatarImage, -screenX - halfWidth, screenY - halfHeight, this.avatarWidth, this.avatarHeight);
+                                } else {
+                                    ctx.drawImage(player.avatarImage, screenX - halfWidth, screenY - halfHeight, this.avatarWidth, this.avatarHeight);
+                                }
+                                
+                                ctx.restore();
+                            } else {
+                                // Fallback to colored dot
+                                ctx.fillStyle = '#3498db';
+                                ctx.globalAlpha = 0.8;
+                                ctx.beginPath();
+                                ctx.arc(screenX, screenY, 10, 0, 2 * Math.PI);
+                                ctx.fill();
+                                ctx.globalAlpha = 1;
+                            }
+                            
+                            // Draw player name/uid (optional)
+                            ctx.fillStyle = '#FFFFFF';
+                            ctx.strokeStyle = '#000000';
+                            ctx.lineWidth = 3;
+                            ctx.font = '12px Arial';
+                            ctx.textAlign = 'center';
+                            const displayName = `Player ${uid.substring(0, 6)}`;
+                            ctx.strokeText(displayName, screenX, screenY - 60);
+                            ctx.fillText(displayName, screenX, screenY - 60);
+                        }
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html> 

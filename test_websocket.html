@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <div id="status">Not connected</div>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="sendUpdate()">Send Update</button>
+    <pre id="log"></pre>
+
+    <script>
+        let ws = null;
+        const uid = 'test-' + Math.random().toString(36).substr(2, 9);
+        
+        function log(message) {
+            document.getElementById('log').textContent += message + '\n';
+        }
+        
+        function connect() {
+            ws = new WebSocket(`ws://localhost:8000/ws/${uid}`);
+            
+            ws.onopen = () => {
+                document.getElementById('status').textContent = 'Connected';
+                log('Connected to WebSocket');
+            };
+            
+            ws.onmessage = (event) => {
+                log('Received: ' + event.data);
+            };
+            
+            ws.onerror = (error) => {
+                log('Error: ' + error);
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('status').textContent = 'Disconnected';
+                log('Disconnected from WebSocket');
+            };
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+            }
+        }
+        
+        function sendUpdate() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const data = {
+                    type: 'player_update',
+                    x: Math.floor(Math.random() * 1000),
+                    y: Math.floor(Math.random() * 1000),
+                    avatar: 1,
+                    facingLeft: false
+                };
+                ws.send(JSON.stringify(data));
+                log('Sent: ' + JSON.stringify(data));
+            }
+        }
+    </script>
+</body>
+</html> 
