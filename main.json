@@ -1,69 +1,11 @@
 {
-  "d0ee166e-d126-4e4b-9220-b620019e9b6f": {
-    "start": 1751509998.3261619,
-    "saved": [
-      "Ancient Artifact",
-      "Healing Water",
-      "Healing Water"
-    ],
-    "avatar": 6
-  },
-  "16485d85-c71e-4572-87f8-0865774f376f": {
-    "start": 1751510524.429533,
+  "97daa51b-06c5-495c-9276-6e98a6451283": {
+    "start": 1752581220.489881,
     "avatar": 1,
     "saved": [
-      "Healing Water",
-      "Ancient Artifact"
+      "left_of_hq/2a.mp4",
+      "fish_restaurant/21a.mp4",
+      "underwater/31a.mp4"
     ]
-  },
-  "1105b7cf-5a60-4850-b694-6d2841fac9f7": {
-    "start": 1751510614.6675441,
-    "avatar": 3,
-    "saved": [
-      "Ancient Artifact"
-    ]
-  },
-  "244ad05a-0602-42f0-a63d-cbd13ef55644": {
-    "start": 1751511420.164991,
-    "avatar": 6
-  },
-  "48d96f1d-7a5d-4166-8d99-c3248408e609": {
-    "start": 1751684506.588186,
-    "avatar": 9
-  },
-  "0ab2d26f-2461-4075-aec9-971e606fa7a9": {
-    "start": 1751684934.270904,
-    "avatar": 9,
-    "saved": [
-      "Ancient Artifact",
-      "Mirror Fish",
-      "Mirror Fish"
-    ]
-  },
-  "15640bbb-8996-48eb-a3f5-4b02a4063c19": {
-    "start": 1751686644.2519538,
-    "avatar": 12,
-    "saved": [
-      "Mirror Fish",
-      "Underwater Pearl",
-      "Mirror Fish"
-    ]
-  },
-  "88fce7aa-4201-4c10-87ab-09ce04de85ac": {
-    "start": 1751689783.0412931,
-    "avatar": 5,
-    "saved": [
-      "Underwater Pearl",
-      "Healing Water",
-      "Crystal Shard"
-    ]
-  },
-  "a54684c6-1cb8-496f-9700-75257cbe6738": {
-    "start": 1751693703.3414688,
-    "avatar": 13
-  },
-  "4f47ac49-9884-4321-81d9-db63ccf8fdc9": {
-    "start": 1751693917.382733,
-    "avatar": 6
   }
 }

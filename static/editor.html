@@ -145,15 +145,7 @@
         <form @submit.prevent="saveInteraction">
             <label>Title <input v-model="form.title" required></label>
             <label>Description <textarea v-model="form.description" required></textarea></label>
-            <label>Item <input v-model="form.item" required></label>
-            <label>Type
-                <select v-model="form.type" required>
-                    <option value="image">Image</option>
-                    <option value="video">Video</option>
-                    <option value="3d">3D</option>
-                </select>
-            </label>
-            <label>Media URL <input v-model="form.media"></label>
+            <label>Event Folder <input v-model="form.event" required placeholder="e.g. salt"></label>
             <div class="popup-actions">
                 <button type="submit">Save</button>
                 <button type="button" @click="cancelPopup">Cancel</button>
@@ -175,7 +167,7 @@ createApp({
             worldMapHeight: 0,
             interactions: [],
             showPopup: false,
-            form: { x: 0, y: 0, title: '', description: '', item: '', type: 'image', media: '' },
+            form: { x: 0, y: 0, title: '', description: '', event: '' },
             editingIdx: null,
             selectedIdx: null,
             draggingIdx: null,
@@ -252,7 +244,7 @@ createApp({
                 }
             }
             const { x, y } = this.canvasToWorld(cx, cy);
-            this.form = { x, y, title: '', description: '', item: '', type: 'image', media: '' };
+            this.form = { x, y, title: '', description: '', event: '' };
             this.editingIdx = null;
             this.showPopup = true;
         },
@@ -277,7 +269,7 @@ createApp({
         },
         editInteraction(idx) {
             const interaction = this.interactions[idx];
-            this.form = { ...interaction };
+            this.form = { x: interaction.x, y: interaction.y, title: interaction.title, description: interaction.description, event: interaction.event };
             this.editingIdx = idx;
             this.selectedIdx = idx;
             this.showPopup = true;
@@ -340,7 +332,14 @@ createApp({
                 try {
                     const arr = JSON.parse(evt.target.result);
                     if (Array.isArray(arr)) {
-                        this.interactions = arr.map(obj => ({ ...obj }));
+                        this.interactions = arr.map(obj => ({
+                            id: obj.id,
+                            x: obj.x,
+                            y: obj.y,
+                            title: obj.title,
+                            description: obj.description,
+                            event: obj.event
+                        }));
                     } else {
                         alert('Invalid JSON format');
                     }

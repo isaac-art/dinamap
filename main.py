@@ -3,12 +3,13 @@ import os
 import json
 import time
 from uuid import uuid4 as u4
-from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from typing import Dict, Set
 import asyncio
+import random
 
 from data_utils import *
 
@@ -199,6 +200,32 @@ async def websocket_endpoint(websocket: WebSocket, uid: str):
     except Exception as e:
         print(f"WebSocket error for {uid}: {e}")
         manager.disconnect(uid)
+
+@app.get("/random-media/{event}")
+async def random_media(event: str = Path(..., description="Event directory name")):
+    # Map event to directory
+    base_dir = os.path.join("static", "chopped_videos", event)
+    if not os.path.isdir(base_dir):
+        raise HTTPException(status_code=404, detail=f"Event directory '{event}' not found")
+    # List files (images/videos)
+    files = [f for f in os.listdir(base_dir) if f.lower().endswith((".jpg", ".jpeg", ".png", ".mp4", ".webm", ".mov"))]
+    if not files:
+        raise HTTPException(status_code=404, detail=f"No media files found for event '{event}'")
+    filename = random.choice(files)
+    ext = filename.split(".")[-1].lower()
+    if ext in ("jpg", "jpeg", "png"):
+        filetype = "image"
+    elif ext in ("mp4", "webm", "mov"):
+        filetype = "video"
+    else:
+        filetype = "unknown"
+    url = f"/static/chopped_videos/{event}/{filename}"
+    return {
+        "event": event,
+        "filename": filename,
+        "url": url,
+        "type": filetype
+    }
 
 if __name__ == "__main__":
     import uvicorn
