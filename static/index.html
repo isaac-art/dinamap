@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DinaMap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Winky+Rough:wght@400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         * {
@@ -13,17 +16,17 @@
         }
 
         body {
-            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-            background: #2c3e50;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
+            background-image: url('lion_fish.png');
             min-height: 100vh;
             color: #ecf0f1;
             line-height: 1.4;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         .header {
@@ -33,10 +36,11 @@
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 0px #34495e;
-            font-weight: bold;
+            font-family: 'Winky Rough', cursive;
+            font-size: 3.5rem;
+            padding-top: 20px;
+            text-shadow: 4px 4px 4px #3672ae, 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
+            font-weight: 800;
             letter-spacing: 1px;
         }
 
@@ -47,7 +51,7 @@
 
         .main-content {
             background: #34495e;
-            border: 4px solid #2c3e50;
+            border: 4px solid #3a5a7a;
             border-radius: 8px;
             padding: 20px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
@@ -55,7 +59,7 @@
         }
 
         .status-bar {
-            background: #2c3e50;
+            background: #18344f;
             border: 2px solid #ecf0f1;
             border-radius: 4px;
             padding: 12px;
@@ -63,9 +67,9 @@
         }
 
         .uid-display {
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
             background: #ecf0f1;
-            color: #2c3e50;
+            color: #3a5a7a;
             padding: 8px 12px;
             border-radius: 4px;
             font-size: 0.9rem;
@@ -74,7 +78,7 @@
         }
 
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 5px;
         }
 
         .section h2 {
@@ -84,6 +88,7 @@
             padding-bottom: 8px;
             font-size: 1.3rem;
             font-weight: bold;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
         }
 
         .avatar-grid {
@@ -100,7 +105,7 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: #2c3e50;
+            background: #3a5a7a;
             font-size: 0.9rem;
         }
 
@@ -140,7 +145,7 @@
             margin-bottom: 12px;
             background: #ecf0f1;
             color: #2c3e50;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .save-input:focus {
@@ -157,7 +162,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             font-weight: bold;
             transition: all 0.2s ease;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
@@ -196,7 +201,7 @@
             border-radius: 4px;
             margin-bottom: 12px;
             border: 2px solid;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             font-weight: bold;
         }
 
@@ -252,7 +257,7 @@
             margin-left: 6px;
             cursor: pointer;
             font-size: 0.7rem;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             font-weight: bold;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
         }
@@ -266,7 +271,7 @@
             background: #2c3e50;
             border: 2px solid #ecf0f1;
             border-radius: 6px;
-            padding: 15px;
+            padding: 5px;
         }
 
         .stats-content {
@@ -293,14 +298,14 @@
             color: #bdc3c7;
             font-size: 0.8rem;
             margin-bottom: 8px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
         }
 
         .stat-number {
             font-size: 1.5rem;
             font-weight: bold;
             color: #3498db;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
         }
 
         .stats-grid {
@@ -313,7 +318,7 @@
             color: #ecf0f1;
             margin-bottom: 12px;
             text-align: center;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
             font-weight: bold;
         }
 
@@ -331,7 +336,7 @@
             padding: 8px;
             border-bottom: 1px solid #7f8c8d;
             transition: background 0.2s ease;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .stat-item:hover {
@@ -354,7 +359,7 @@
             font-size: 0.7rem;
             font-weight: bold;
             margin-right: 12px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
         }
 
         .stat-name {
@@ -373,7 +378,7 @@
             color: #bdc3c7;
             font-style: italic;
             padding: 15px;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         @media (max-width: 768px) {
@@ -387,7 +392,7 @@
         .game-intro {
             text-align: center;
             padding: 15px;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .game-section {
@@ -443,7 +448,7 @@
             color: #ecf0f1;
             margin-bottom: 8px;
             font-size: 0.9rem;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
             font-weight: bold;
         }
 
@@ -462,7 +467,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             border: 1px solid #7f8c8d;
         }
 
@@ -486,7 +491,7 @@
             text-align: center;
             color: #bdc3c7;
             font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         /* Mobile Controls */
@@ -868,7 +873,7 @@
         .popup-header h3 {
             margin: 0;
             color: #ecf0f1;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif;
             font-weight: bold;
             font-size: 1.1rem;
         }
@@ -882,7 +887,7 @@
             height: 28px;
             cursor: pointer;
             font-size: 1rem;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             font-weight: bold;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
         }
@@ -925,7 +930,7 @@
             line-height: 1.5;
             margin-top: 12px;
             flex-shrink: 0;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
             font-size: 0.9rem;
         }
 
@@ -974,7 +979,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             color: #ecf0f1;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .replace-item:hover {
@@ -1001,7 +1006,7 @@
             padding: 12px;
             margin-top: 8px;
             text-align: center;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .video-error p {
@@ -1015,7 +1020,7 @@
             padding: 30px;
             text-align: center;
             color: #ecf0f1;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .video-loading .loading {
@@ -1029,7 +1034,7 @@
             padding: 15px;
             margin: 10px 0;
             color: #ecf0f1;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, sans-serif;
         }
 
         .video-fallback p {
@@ -1045,6 +1050,32 @@
         .stat-link:hover {
             color: #f39c12;
             text-decoration: underline;
+        }
+
+        /* Side-by-side layout for welcome and avatar sections */
+        .welcome-avatar-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .welcome-section {
+            flex: 1;
+            min-width: 0; /* Allow flex item to shrink below content size */
+        }
+
+        .avatar-section {
+            flex: 1;
+            min-width: 0; /* Allow flex item to shrink below content size */
+        }
+
+        /* Mobile responsive for side-by-side layout */
+        @media (max-width: 768px) {
+            .welcome-avatar-container {
+                flex-direction: column;
+                gap: 20px;
+            }
         }
     </style>
 </head>
@@ -1068,28 +1099,37 @@
                     {{ message }}
                 </div> -->
 
-                <div v-if="!gameStarted" class="section">
-                    In this little game you can explore around finding images and videos and picking up the ones you like best. The images and videos vary in opinion, some being direct, some kaleidoscopic. We keep a record of what people pick up and use this to curate our dataset, directing our documentation towards what is collectively seen as interesting or best representing dinacon. 
-                </div>
+                <!-- Welcome and Avatar Selection Side by Side -->
+                <div v-if="!gameStarted" class="welcome-avatar-container">
+                    <div class="welcome-section section">
+                        <h2>Hello Bali Dino!</h2>
+                        <!-- In this little game you can explore around finding images and videos and picking up the ones you like best. The images and videos vary in opinion, some being direct, some kaleidoscopic. We keep a record of what people pick up and use this to curate our dataset, directing our documentation towards what is collectively seen as interesting or best representing dinacon.  -->
+                        Welcome to Segara Lestari World, a small game built from the photos and videos we took during our short but memorable stay at Dinacon 2025, mapped onto a hand-drawn version of the Segara Lestari homestay and its surroundings.
 
-                <!-- Avatar Selection -->
-                <div v-if="!selectedAvatar && !gameStarted" class="section">
-                    <h2>Choose Your Avatar</h2>
-                    <p>These avatars were made during the chill airdrying clay session that we tagged onto the very chill watercolors. Thanks to everyone who helped make them!</p>
-                    <div class="avatar-grid">
-                        <div 
-                            v-for="avatar in avatars" 
-                            :key="avatar.id"
-                            :class="['avatar-option', { selected: selectedAvatar === avatar.id }]"
-                            @click="selectAvatar(avatar.id)"
-                        >
-                            <img :src="avatar.image" :alt="avatar.name">
-                            <div>{{ avatar.name }}</div>
+                        <br> <br>In this little game, you'll explore the area by uncovering images and videos tucked into different corners of the map. Some are direct, others more abstract—each capturing a fragment of our Dinacon experience. Pick your favorite three to carry in your pocket. Your selections help shape a collective archive, curating the moments that resonate most with everyone who plays.
+                        
+                        <br> <br> We're also thinking about ways to let future players contribute their own footage, so this world can keep growing, one memory at a time.
+                        
+                        <br> <br>-- Your fellow Dino Isaac and Xindi <3
+                    </div>
+
+                    <!-- Avatar Selection -->
+                    <div v-if="!selectedAvatar" class="avatar-section section">
+                        <h2>Choose Your Avatar</h2>
+                        <p>These avatars were made during the chill airdrying clay session that we tagged onto the very chill watercolors. Thanks to everyone who helped make them!</p>
+                        <div class="avatar-grid">
+                            <div 
+                                v-for="avatar in avatars" 
+                                :key="avatar.id"
+                                :class="['avatar-option', { selected: selectedAvatar === avatar.id }]"
+                                @click="selectAvatar(avatar.id)"
+                            >
+                                <img :src="avatar.image" :alt="avatar.name">
+                                <div>{{ avatar.name }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
 
                 <!-- Game World -->
                 <div v-if="gameStarted" class="game-section">
