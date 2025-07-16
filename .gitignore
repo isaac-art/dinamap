@@ -10,3 +10,7 @@ wheels/
 .venv
 *.mp4
 .DS_Store
+static/chopped_videos/fish_restaurant/IMG_20250701_083823_00_017.jpg
+static/chopped_videos/HQ/IMG_20250701_084424_00_019.jpg
+static/chopped_videos/salt/IMG_20250703_103809_00_052.jpg
+static/chopped_videos/underwater/IMG_20250702_111326_00_057.jpg
